@@ -1,9 +1,12 @@
-import Hero from "@/components/Hero";
+import ProductSections from "@/components/ProductSections";
+import { getProducts } from "@/lib/api";
 
-const Home = () => {
+const Home = async () => {
+  const products = await getProducts();
+
   return (
     <main>
-      <Hero />
+      <ProductSections products={products} />
     </main>
   );
 };
