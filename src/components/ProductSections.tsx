@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Product } from "@/types/product";
 
 const priceFormatter = new Intl.NumberFormat("bn-BD");
@@ -22,7 +23,11 @@ const ProductCard = ({ product }: { product: Product }) => {
   }[dir];
 
   return (
-    <article className="flex min-h-[138px] flex-col justify-between rounded-2xl border border-[#e1e8e1] bg-[#fafcfa] p-4">
+    <Link
+      href={`/product/${product.slug}`}
+      className="flex min-h-[138px] flex-col justify-between rounded-2xl border border-[#e1e8e1] bg-[#fafcfa] p-4 transition hover:border-[#05893e] hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#05893e]"
+      aria-label={`${product.nameBn}, ${priceFormatter.format(product.today)} টাকা - বিস্তারিত দেখুন`}
+    >
       <div className="flex items-center gap-3">
         <span
           aria-hidden="true"
@@ -54,7 +59,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           {percentFormatter.format(Math.abs(pct))}%
         </span>
       </div>
-    </article>
+    </Link>
   );
 };
 

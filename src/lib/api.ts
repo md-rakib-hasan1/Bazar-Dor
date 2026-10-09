@@ -36,6 +36,13 @@ export const getProducts = async (): Promise<Product[]> => {
   return data;
 };
 
+export const getProductBySlug = async (
+  slug: string,
+): Promise<Product | undefined> => {
+  const products = await getProducts();
+  return products.find((product) => product.slug === slug);
+};
+
 export const getProductsByCategory = async (
   category: string
 ): Promise<Product[]> => {
