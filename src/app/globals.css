@@ -1,2 +1,23 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+
+.price-marquee-track {
+  animation: price-marquee 40s linear infinite;
+}
+
+@keyframes price-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .price-marquee-track {
+    animation: none;
+  }
+}

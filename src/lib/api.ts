@@ -1,7 +1,7 @@
 import { Category, Product } from "@/types/product";
 
 const BASE_URL =
-  "https://api.api-store.workers.dev/api/bazardor";
+  "https://api.abcz.workers.dev/api/bazardor";
 
 export const getProducts = async (): Promise<Product[]> => {
   const response = await fetch(`${BASE_URL}/products`);
@@ -10,9 +10,13 @@ export const getProducts = async (): Promise<Product[]> => {
     throw new Error("Failed to fetch products");
   }
 
-  const data = await response.json();
+  const data: unknown = await response.json();
 
-  return data.items;
+  if (!Array.isArray(data)) {
+    throw new Error("Invalid products response");
+  }
+
+  return data;
 };
 
 export const getProductBySlug = async (
@@ -40,9 +44,13 @@ export const getProductsByCategory = async (
     throw new Error("Failed to fetch category products");
   }
 
-  const data = await response.json();
+  const data: unknown = await response.json();
 
-  return data.items;
+  if (!Array.isArray(data)) {
+    throw new Error("Invalid category products response");
+  }
+
+  return data;
 };
 
 export const getCategories = async (): Promise<Category[]> => {
@@ -52,7 +60,11 @@ export const getCategories = async (): Promise<Category[]> => {
     throw new Error("Failed to fetch categories");
   }
 
-  const data = await response.json();
+  const data: unknown = await response.json();
+
+  if (!Array.isArray(data)) {
+    throw new Error("Invalid categories response");
+  }
 
   return data;
 };

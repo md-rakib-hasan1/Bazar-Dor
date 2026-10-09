@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import NavLinks from "./NavLinks";
-import { Category } from "@/types/product";
+import { getCategories } from "@/lib/api";
 
 const Header = async () => {
   const date = new Intl.DateTimeFormat("bn-BD", {
@@ -12,11 +12,8 @@ const Header = async () => {
     year: "numeric",
   }).format(new Date());
 
-  const response = await fetch(
-    "https://api.abcz.workers.dev/api/bazardor/categories"
-  );
+  const categories = await getCategories();
 
-  const categories: Category[] = await response.json();
 
   return (
     <header className="w-full border-b border-gray-200 bg-white">
