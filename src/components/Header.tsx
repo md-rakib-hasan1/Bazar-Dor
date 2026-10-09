@@ -1,17 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import NavLinks from "./NavLinks";
+import BanglaDate from "@/components/BanglaDate";
 import { getCategories } from "@/lib/api";
 
 const Header = async () => {
-  const date = new Intl.DateTimeFormat("bn-BD", {
-    timeZone: "Asia/Dhaka",
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   const categories = await getCategories();
 
 
@@ -40,7 +33,7 @@ const Header = async () => {
               </Link>
 
               <p className="text-[9px] text-gray-500">
-                {date}
+                <BanglaDate />
               </p>
             </div>
           </div>
