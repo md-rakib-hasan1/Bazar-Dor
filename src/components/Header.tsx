@@ -38,7 +38,6 @@ const Header = async () => {
             </div>
           </div>
 
-          
           <div className="flex items-center gap-1.5">
             <Link
               href="/signin"
@@ -46,7 +45,6 @@ const Header = async () => {
             >
               সাইন ইন
             </Link>
-
             <Link
               href="/signup"
               className="rounded-md bg-green-700 px-3 py-2 text-xs font-medium text-white transition hover:bg-green-800"

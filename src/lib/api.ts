@@ -1,22 +1,56 @@
-import { Category, Product } from "@/types/product";
+import type { Category, Product } from "@/types/product";
 
 const BASE_URLS = [
-  "https://api.abcz.workers.dev/api/bazardor",
   "https://api.api-store.workers.dev/api/bazardor",
+  "https://api.abcz.workers.dev/api/bazardor",
 ];
 
-const fetchApiData = async (path: string): Promise<unknown> => {
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isProductList = (data: unknown): data is Product[] =>
+  Array.isArray(data) &&
+  data.every(
+    (product) =>
+      isRecord(product) &&
+      typeof product.id === "number" &&
+      typeof product.slug === "string" &&
+      typeof product.nameBn === "string" &&
+      typeof product.today === "number" &&
+      isRecord(product.change) &&
+      (product.change.dir === "up" ||
+        product.change.dir === "down" ||
+        product.change.dir === "flat") &&
+      typeof product.change.pct === "number" &&
+      Array.isArray(product.markets),
+  );
+
+const fetchApiData = async <T>(
+  path: string,
+  isValidResponse: (data: unknown) => data is T,
+): Promise<T> => {
   let lastError: Error | undefined;
 
   for (const baseUrl of BASE_URLS) {
     try {
-      const response = await fetch(`${baseUrl}${path}`);
+      const url = `${baseUrl}${path}`;
+      const response = await fetch(url, {
+        next: { revalidate: 3600 },
+        signal: AbortSignal.timeout(8000),
+      });
 
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+        throw new Error(
+          `API request to ${url} failed with status ${response.status}`,
+        );
       }
 
-      return await response.json();
+      const data: unknown = await response.json();
+      if (!isValidResponse(data)) {
+        throw new Error(`API returned an invalid response for ${path}`);
+      }
+
+      return data;
     } catch (error) {
       lastError =
         error instanceof Error ? error : new Error(String(error));
@@ -26,15 +60,8 @@ const fetchApiData = async (path: string): Promise<unknown> => {
   throw lastError ?? new Error("All product API requests failed");
 };
 
-export const getProducts = async (): Promise<Product[]> => {
-  const data = await fetchApiData("/products");
-
-  if (!Array.isArray(data)) {
-    throw new Error("Invalid products response");
-  }
-
-  return data;
-};
+export const getProducts = (): Promise<Product[]> =>
+  fetchApiData("/products", isProductList);
 
 export const getProductBySlug = async (
   slug: string,
@@ -45,24 +72,23 @@ export const getProductBySlug = async (
 
 export const getProductsByCategory = async (
   category: string
-): Promise<Product[]> => {
-  const data = await fetchApiData(
-    `/products?category=${encodeURIComponent(category)}`,
-  );
-
-  if (!Array.isArray(data)) {
-    throw new Error("Invalid category products response");
-  }
-
-  return data;
-};
+): Promise<Product[]> =>
+  (await getProducts()).filter((product) => product.category === category);
 
 export const getCategories = async (): Promise<Category[]> => {
-  const data = await fetchApiData("/categories");
+  const products = await getProducts();
+  const categories = new Map<string, Category>();
 
-  if (!Array.isArray(data)) {
-    throw new Error("Invalid categories response");
+  for (const product of products) {
+    if (!categories.has(product.category)) {
+      categories.set(product.category, {
+        id: product.category,
+        slug: product.category,
+        nameBn: product.categoryNameBn,
+        icon: product.categoryIcon,
+      });
+    }
   }
 
-  return data;
+  return [...categories.values()];
 };
