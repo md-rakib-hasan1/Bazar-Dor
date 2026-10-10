@@ -9,7 +9,7 @@
 - Better Auth ও MongoDB
 - Sonner toast notification
 
-বর্তমানে শুধু signup flow যোগ করা হয়েছে। Sign-in, logout ও session পরে আলাদাভাবে যোগ করা হবে।
+ইমেইল/পাসওয়ার্ড এবং Google/GitHub দিয়ে signup ও sign-in করা যায়। Product detail দেখতে sign-in প্রয়োজন; sign-in না থাকলে পেজটি signin-এ পাঠায় এবং সফল sign-in-এর পর আগের product page-এ ফিরিয়ে আনে।
 
 ## প্রধান ফিচার
 
@@ -17,7 +17,8 @@
 - সব পণ্যের responsive card ও category অনুযায়ী তালিকা
 - দামের সারসংক্ষেপ এবং বাজারভিত্তিক মূল্যতালিকাসহ product detail page
 - category-তে দাম কম-বেশি অনুযায়ী sort
-- Better Auth দিয়ে email/password ও Google/GitHub signup
+- Better Auth দিয়ে email/password ও Google/GitHub signup এবং sign-in
+- Product detail page-এ sign-in access control
 
 ## Product API
 

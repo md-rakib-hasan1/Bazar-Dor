@@ -11,6 +11,21 @@ const SignUpPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const getCallbackURL = () => {
+    const requestedCallback = new URLSearchParams(
+      window.location.search,
+    ).get("callbackURL");
+
+    if (!requestedCallback) {
+      return "/";
+    }
+
+    const destination = new URL(requestedCallback, window.location.origin);
+    return destination.origin === window.location.origin
+      ? `${destination.pathname}${destination.search}${destination.hash}`
+      : "/";
+  };
+
   const showValidationError = (message: string) => {
     setErrorMessage(message);
     toast.error(message);
@@ -48,6 +63,7 @@ const SignUpPage = () => {
 
     setIsSubmitting(true);
     try {
+      const callbackURL = getCallbackURL();
       const result = await authClient.signUp.email({
         name,
         email,
@@ -62,7 +78,9 @@ const SignUpPage = () => {
       }
 
       toast.success("অ্যাকাউন্ট তৈরি হয়েছে। এখন সাইন ইন করুন।");
-      router.push("/signin?registered=1");
+      router.push(
+        `/signin?registered=1&callbackURL=${encodeURIComponent(callbackURL)}`,
+      );
     } catch {
       const message =
         "অনুরোধটি সম্পন্ন করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।";
@@ -78,9 +96,10 @@ const SignUpPage = () => {
     setIsSubmitting(true);
 
     try {
+      const callbackURL = getCallbackURL();
       const result = await authClient.signIn.social({
         provider,
-        callbackURL: "/",
+        callbackURL,
       });
 
       if (result.error) {

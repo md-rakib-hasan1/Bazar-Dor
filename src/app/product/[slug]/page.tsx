@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { getProductBySlug } from "@/lib/api";
 
 const priceFormatter = new Intl.NumberFormat("bn-BD", {
@@ -19,6 +21,14 @@ const ProductPage = async ({
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect(`/signin?callbackURL=${encodeURIComponent(`/product/${slug}`)}`);
+  }
+
   const product = await getProductBySlug(slug);
 
   if (!product) {

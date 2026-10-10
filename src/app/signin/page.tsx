@@ -1,11 +1,273 @@
+"use client";
 
+import { Suspense, useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 
-const SignInPage = () => {
-    return (
-        <div>
-            sign in
-        </div>
-    );
+const getSafeCallbackURL = (requestedCallback: string | null) => {
+  if (
+    !requestedCallback ||
+    !requestedCallback.startsWith("/") ||
+    requestedCallback.startsWith("//") ||
+    requestedCallback.includes("\\")
+  ) {
+    return "/";
+  }
+
+  return requestedCallback;
 };
+
+const SignInContent = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackURL = getSafeCallbackURL(searchParams.get("callbackURL"));
+  const isRegistered = searchParams.get("registered") === "1";
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (isRegistered) {
+      toast.success("অ্যাকাউন্ট তৈরি হয়েছে। এখন সাইন ইন করুন।");
+    }
+  }, [isRegistered]);
+
+  const showValidationError = (message: string) => {
+    setErrorMessage(message);
+    toast.error(message);
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrorMessage("");
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showValidationError("সঠিক ইমেইল ঠিকানা লিখুন।");
+      return;
+    }
+
+    if (!password) {
+      showValidationError("আপনার পাসওয়ার্ড লিখুন।");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL,
+      });
+
+      if (result.error) {
+        const message = result.error.message || "ইমেইল বা পাসওয়ার্ড সঠিক নয়।";
+        setErrorMessage(message);
+        toast.error(message);
+        return;
+      }
+
+      toast.success("সফলভাবে সাইন ইন হয়েছে।");
+      router.replace(callbackURL);
+      router.refresh();
+    } catch {
+      const message =
+        "অনুরোধটি সম্পন্ন করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।";
+      setErrorMessage(message);
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const signInWithSocialProvider = async (provider: "google" | "github") => {
+    setErrorMessage("");
+    setIsSubmitting(true);
+
+    try {
+      const result = await authClient.signIn.social({
+        provider,
+        callbackURL,
+      });
+
+      if (result.error) {
+        const message =
+          result.error.message || "সামাজিক অ্যাকাউন্ট দিয়ে সাইন ইন করা যায়নি।";
+        setErrorMessage(message);
+        toast.error(message);
+      }
+    } catch {
+      const message =
+        "সামাজিক অ্যাকাউন্ট দিয়ে সাইন ইন করা যায়নি। আবার চেষ্টা করুন।";
+      setErrorMessage(message);
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <main className="flex flex-1 flex-col items-center bg-[#f0f5f0] px-4 py-10">
+      <section className="w-full max-w-md">
+        <header className="mb-6 text-center">
+          <h1 className="text-2xl font-bold text-[#1d271f]">সাইন ইন</h1>
+          <p className="mt-2 text-sm text-[#59645b]">
+            বিস্তারিত দাম, বাজার তুলনা ও প্রোফাইল দেখতে অ্যাকাউন্টে সাইন ইন
+            করুন।
+          </p>
+        </header>
+
+        <div className="rounded-xl border border-[#e5ebe5] bg-[#fafcfa] p-6 shadow-sm">
+          <form className="space-y-4" noValidate onSubmit={handleSubmit}>
+            <div>
+              <label
+                htmlFor="signin-email"
+                className="mb-2 block text-sm font-medium text-[#1d271f]"
+              >
+                ইমেইল
+              </label>
+              <input
+                id="signin-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                required
+                disabled={isSubmitting}
+                className="h-10 w-full rounded-md border border-[#dce4dc] bg-[#fafcfa] px-3 text-sm text-[#1d271f] outline-none transition placeholder:text-[#8a948b] focus:border-[#05893e] focus:ring-2 focus:ring-[#05893e]/15 disabled:opacity-60"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="signin-password"
+                className="mb-2 block text-sm font-medium text-[#1d271f]"
+              >
+                পাসওয়ার্ড
+              </label>
+              <input
+                id="signin-password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="আপনার পাসওয়ার্ড লিখুন"
+                required
+                disabled={isSubmitting}
+                className="h-10 w-full rounded-md border border-[#dce4dc] bg-[#fafcfa] px-3 text-sm text-[#1d271f] outline-none transition placeholder:text-[#8a948b] focus:border-[#05893e] focus:ring-2 focus:ring-[#05893e]/15 disabled:opacity-60"
+              />
+            </div>
+
+            {errorMessage && (
+              <p role="alert" className="text-sm text-red-700">
+                {errorMessage}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-10 w-full rounded-md bg-[#05893e] px-4 text-sm font-semibold text-white transition hover:bg-[#047333] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#05893e] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? "সাইন ইন হচ্ছে..." : "সাইন ইন"}
+            </button>
+
+            <div className="flex items-center gap-3 py-1" aria-hidden="true">
+              <span className="h-px flex-1 bg-[#1d271f]/10" />
+              <span className="text-xs text-[#687169]">অথবা</span>
+              <span className="h-px flex-1 bg-[#1d271f]/10" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => signInWithSocialProvider("google")}
+                className="flex h-10 items-center justify-center gap-2 rounded-md border border-[#dce4dc] bg-white px-2 text-xs font-medium text-[#1d271f] transition hover:bg-[#f4f7f4] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-4 w-4 shrink-0"
+                >
+                  <path
+                    fill="#4285F4"
+                    d="M21.35 12.2c0-.7-.06-1.37-.18-2.02H12v3.82h5.24a4.48 4.48 0 0 1-1.94 2.94v2.4h3.14c1.84-1.7 2.91-4.2 2.91-7.14Z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 21.6c2.63 0 4.84-.87 6.45-2.36l-3.14-2.4c-.87.58-1.98.93-3.31.93-2.54 0-4.69-1.71-5.46-4.01H3.3v2.47A9.75 9.75 0 0 0 12 21.6Z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M6.54 13.76a5.86 5.86 0 0 1 0-3.72V7.57H3.3a9.75 9.75 0 0 0 0 8.66l3.24-2.47Z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 6.03c1.43 0 2.72.49 3.73 1.46l2.8-2.8C16.84 3.07 14.63 2.1 12 2.1a9.75 9.75 0 0 0-8.7 5.47l3.24 2.47C7.31 7.74 9.46 6.03 12 6.03Z"
+                  />
+                </svg>
+                Google দিয়ে চালিয়ে যান
+              </button>
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => signInWithSocialProvider("github")}
+                className="flex h-10 items-center justify-center gap-2 rounded-md border border-[#dce4dc] bg-white px-2 text-xs font-medium text-[#1d271f] transition hover:bg-[#f4f7f4] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-4 w-4 shrink-0 fill-current"
+                >
+                  <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.24-1.62-1.24-1.62-1.01-.7.08-.69.08-.69 1.12.08 1.71 1.15 1.71 1.15 1 .1.77 2.33 3.89 1.65.1-.72.39-1.22.7-1.5-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.21 1.15-2.99-.12-.28-.5-1.42.11-2.95 0 0 .94-.3 3.05 1.14a10.6 10.6 0 0 1 5.55 0c2.11-1.44 3.05-1.14 3.05-1.14.61 1.53.23 2.67.11 2.95.72.78 1.15 1.77 1.15 2.99 0 4.29-2.62 5.23-5.11 5.51.4.35.75 1.03.75 2.08v3.08c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z" />
+                </svg>
+                GitHub দিয়ে চালিয়ে যান
+              </button>
+            </div>
+
+            <p className="pt-1 text-center text-sm text-[#59645b]">
+              অ্যাকাউন্ট নেই?{" "}
+              <Link
+                href={`/signup?callbackURL=${encodeURIComponent(callbackURL)}`}
+                className="font-semibold text-[#05893e] hover:underline"
+              >
+                সাইন আপ করুন
+              </Link>
+            </p>
+          </form>
+        </div>
+
+        <Link
+          href="/"
+          className="mt-6 block text-center text-sm font-medium text-[#05893e] transition hover:text-[#046d32]"
+        >
+          ← হোম পেজে ফিরে যান
+        </Link>
+      </section>
+    </main>
+  );
+};
+
+const SignInPage = () => (
+  <Suspense
+    fallback={
+      <main
+        aria-busy="true"
+        className="flex flex-1 flex-col items-center bg-[#f0f5f0] px-4 py-10"
+      >
+        <section className="w-full max-w-md animate-pulse">
+          <div className="mx-auto mb-6 h-14 w-3/4 rounded bg-gray-200" />
+          <div className="h-[376px] rounded-xl bg-gray-200" />
+        </section>
+      </main>
+    }
+  >
+    <SignInContent />
+  </Suspense>
+);
 
 export default SignInPage;
