@@ -11,6 +11,8 @@
 
 ইমেইল/পাসওয়ার্ড এবং Google/GitHub দিয়ে signup ও sign-in করা যায়। Product detail দেখতে sign-in প্রয়োজন; sign-in না থাকলে পেজটি signin-এ পাঠায় এবং সফল sign-in-এর পর আগের product page-এ ফিরিয়ে আনে।
 
+Sign-in করা ব্যবহারকারী header-এর profile menu থেকে নিজের profile দেখতে ও sign-out করতে পারেন। Google/GitHub account-এর profile picture স্বয়ংক্রিয়ভাবে দেখায়; email/password account-এ নিজের ছবি upload করা যায়। Profile update page-এ নামও পরিবর্তন করা যায়।
+
 ## প্রধান ফিচার
 
 - আজ দাম বেড়েছে ও কমেছে—শীর্ষ পণ্যের তালিকা
@@ -19,6 +21,8 @@
 - category-তে দাম কম-বেশি অনুযায়ী sort
 - Better Auth দিয়ে email/password ও Google/GitHub signup এবং sign-in
 - Product detail page-এ sign-in access control
+- Session-ভিত্তিক profile menu ও sign-out
+- Profile থেকে নাম ও ছবি update
 
 ## Product API
 

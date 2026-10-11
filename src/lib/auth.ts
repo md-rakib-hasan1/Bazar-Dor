@@ -1,9 +1,10 @@
 import { betterAuth } from "better-auth";
+import { nextCookies } from "better-auth/next-js";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
 
-const client = new MongoClient(process.env.MONGODB_URI as string);
-const db = client.db("bazar_dor");
+export const client = new MongoClient(process.env.MONGODB_URI as string);
+export const db = client.db("bazar_dor");
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -32,4 +33,5 @@ export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
   }),
+  plugins: [nextCookies()],
 });

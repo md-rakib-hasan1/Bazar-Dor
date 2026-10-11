@@ -100,6 +100,7 @@ const SignUpPage = () => {
       const result = await authClient.signIn.social({
         provider,
         callbackURL,
+        errorCallbackURL: `/signin?oauthError=1&callbackURL=${encodeURIComponent(callbackURL)}`,
       });
 
       if (result.error) {

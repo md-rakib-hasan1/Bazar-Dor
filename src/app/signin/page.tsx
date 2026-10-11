@@ -24,14 +24,23 @@ const SignInContent = () => {
   const searchParams = useSearchParams();
   const callbackURL = getSafeCallbackURL(searchParams.get("callbackURL"));
   const isRegistered = searchParams.get("registered") === "1";
+  const isProtectedRedirect = searchParams.get("required") === "1";
+  const hasOAuthError = searchParams.get("oauthError") === "1";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (isRegistered) {
       toast.success("অ্যাকাউন্ট তৈরি হয়েছে। এখন সাইন ইন করুন।");
+    } else if (isProtectedRedirect) {
+      toast.error("এই পেজটি দেখতে আগে সাইন ইন করুন।");
     }
-  }, [isRegistered]);
+    if (hasOAuthError) {
+      toast.error(
+        "এই Google/GitHub অ্যাকাউন্ট দিয়ে সাইন ইন করা যায়নি। আগে যে পদ্ধতিতে অ্যাকাউন্ট খুলেছেন সেটি ব্যবহার করুন।",
+      );
+    }
+  }, [hasOAuthError, isProtectedRedirect, isRegistered]);
 
   const showValidationError = (message: string) => {
     setErrorMessage(message);
@@ -92,6 +101,7 @@ const SignInContent = () => {
       const result = await authClient.signIn.social({
         provider,
         callbackURL,
+        errorCallbackURL: `/signin?oauthError=1&callbackURL=${encodeURIComponent(callbackURL)}`,
       });
 
       if (result.error) {

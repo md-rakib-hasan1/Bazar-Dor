@@ -26,7 +26,9 @@ const ProductPage = async ({
   });
 
   if (!session) {
-    redirect(`/signin?callbackURL=${encodeURIComponent(`/product/${slug}`)}`);
+    redirect(
+      `/signin?callbackURL=${encodeURIComponent(`/product/${slug}`)}&required=1`,
+    );
   }
 
   const product = await getProductBySlug(slug);
