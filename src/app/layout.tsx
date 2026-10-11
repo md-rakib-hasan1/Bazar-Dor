@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import PriceMarquee from "@/components/PriceMarquee";
 import Toaster from "@/components/Toaster";
+import Footer from "@/components/Footer";
 
 const notoSerifBengali = Noto_Serif_Bengali({
   variable: "--font-noto-serif-bengali",
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Header />
         <PriceMarquee />
         {children}
+        <Footer />
         <Toaster />
       </body>
     </html>
