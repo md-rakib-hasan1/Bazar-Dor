@@ -1,29 +1,21 @@
-# বাজার দর (Bazar Dor)
+# Bazar Dor (বাজার দর)
 
-বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের আজকের বাজারদর ও বিভিন্ন বাজারের দামের তুলনা দেখার responsive ওয়েব অ্যাপ।
+![Bazar Dor market illustration](./public/bazar-hero.png)
 
-## প্রযুক্তি
+Bazar Dor is a responsive web application for checking everyday product prices in Bangladesh and comparing prices across local markets.
 
-- Next.js App Router, React ও TypeScript
-- Tailwind CSS ও DaisyUI
-- Better Auth ও MongoDB
-- Sonner toast notification
+## Technologies Used
 
-ইমেইল/পাসওয়ার্ড এবং Google/GitHub দিয়ে signup ও sign-in করা যায়। Product detail দেখতে sign-in প্রয়োজন; sign-in না থাকলে পেজটি signin-এ পাঠায় এবং সফল sign-in-এর পর আগের product page-এ ফিরিয়ে আনে।
+- Next.js App Router
+- React and TypeScript
+- Tailwind CSS
+- Better Auth
+- MongoDB and GridFS
 
-Sign-in করা ব্যবহারকারী header-এর profile menu থেকে নিজের profile দেখতে ও sign-out করতে পারেন। Google/GitHub account-এর profile picture স্বয়ংক্রিয়ভাবে দেখায়; email/password account-এ নিজের ছবি upload করা যায়। Profile update page-এ নামও পরিবর্তন করা যায়।
+## Key Features
 
-## প্রধান ফিচার
-
-- আজ দাম বেড়েছে ও কমেছে—শীর্ষ পণ্যের তালিকা
-- সব পণ্যের responsive card ও category অনুযায়ী তালিকা
-- দামের সারসংক্ষেপ এবং বাজারভিত্তিক মূল্যতালিকাসহ product detail page
-- category-তে দাম কম-বেশি অনুযায়ী sort
-- Better Auth দিয়ে email/password ও Google/GitHub signup এবং sign-in
-- Product detail page-এ sign-in access control
-- Session-ভিত্তিক profile menu ও sign-out
-- Profile থেকে নাম ও ছবি update
-
-## Product API
-
-পণ্যের data প্রথমে `https://api.api-store.workers.dev/api/bazardor/products` থেকে আসে। এটি unavailable হলে `https://api.abcz.workers.dev/api/bazardor/products` বিকল্প হিসেবে ব্যবহৃত হয়। সফল products response এক ঘণ্টা cache থাকে; category ও category-filtered products একই response থেকে তৈরি হয়, তাই অপ্রয়োজনীয় API request এবং rate-limit কমে।
+1. Browse everyday product prices and daily price changes in Bengali numerals.
+2. View products by category and sort them by price.
+3. Compare minimum, maximum, and average prices across markets.
+4. Sign up and sign in with email/password, Google, or GitHub.
+5. Manage a profile, update its name, and upload a profile picture.

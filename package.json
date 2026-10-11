@@ -15,8 +15,6 @@
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-fast-marquee": "^1.6.5",
-    "react-marquee-text": "^1.0.6",
     "sonner": "^2.0.8"
   },
   "devDependencies": {
@@ -25,7 +23,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
-    "daisyui": "^5.7.47",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",
