@@ -6,11 +6,18 @@ const PriceMarquee = async () => {
 
   if (!products.length) return null;
 
-
   const tickerProducts = [...products, ...products];
-
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("bn-BD").format(price);
+  const formatPrice = new Intl.NumberFormat("bn-BD");
+  const formatPercent = new Intl.NumberFormat("bn-BD", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  const unitLabels: Record<string, string> = {
+    kg: "কেজি",
+    litre: "লিটার",
+    dozen: "ডজন",
+    piece: "পিস",
+  };
 
   return (
     <section
@@ -30,7 +37,8 @@ const PriceMarquee = async () => {
             </span>
 
             <span className="text-gray-600">
-              {formatPrice(product.today)} টাকা/{product.unit}
+              {formatPrice.format(product.today)} টাকা/
+              {unitLabels[product.unit] ?? product.unit}
             </span>
 
             <span
@@ -46,8 +54,8 @@ const PriceMarquee = async () => {
                 ? "▲"
                 : product.change.dir === "down"
                   ? "▼"
-                  : "●"}{" "}
-              {formatPrice(product.change.pct)}%
+                  : "—"}{" "}
+              {formatPercent.format(Math.abs(product.change.pct))}%
             </span>
           </div>
         ))}
@@ -57,4 +65,3 @@ const PriceMarquee = async () => {
 };
 
 export default PriceMarquee;
-

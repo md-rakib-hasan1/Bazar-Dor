@@ -30,24 +30,40 @@ const CategoryProductList = ({ products }: { products: Product[] }) => {
         </p>
         <label className="flex items-center gap-2 text-sm text-[#1d271f]">
           <span>সাজান:</span>
-          <select
-            value={sortOrder}
-            onChange={(event) => {
-              const { value } = event.target;
-              if (
-                value === "default" ||
-                value === "price-ascending" ||
-                value === "price-descending"
-              ) {
-                setSortOrder(value);
-              }
-            }}
-            className="h-9 rounded-lg border border-[#e1e8e1] bg-white px-3 text-sm outline-none focus:border-[#05893e] focus:ring-2 focus:ring-[#05893e]/15"
-          >
-            <option value="default">ডিফল্ট</option>
-            <option value="price-ascending">দাম: কম থেকে বেশি</option>
-            <option value="price-descending">দাম: বেশি থেকে কম</option>
-          </select>
+          <span className="relative">
+            <select
+              value={sortOrder}
+              onChange={(event) => {
+                const { value } = event.target;
+                if (
+                  value === "default" ||
+                  value === "price-ascending" ||
+                  value === "price-descending"
+                ) {
+                  setSortOrder(value);
+                }
+              }}
+              className="h-9 appearance-none rounded-lg border border-[#e1e8e1] bg-white py-1 pl-3 pr-9 text-sm outline-none focus:border-[#05893e] focus:ring-2 focus:ring-[#05893e]/15"
+            >
+              <option value="default">ডিফল্ট</option>
+              <option value="price-ascending">দাম: কম থেকে বেশি</option>
+              <option value="price-descending">দাম: বেশি থেকে কম</option>
+            </select>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"
+            >
+              <path
+                d="m5 7.5 5 5 5-5"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+              />
+            </svg>
+          </span>
         </label>
       </div>
 

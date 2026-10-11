@@ -21,6 +21,12 @@ const ProductPage = async ({
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
+  const product = await getProductBySlug(slug);
+
+  if (!product) {
+    notFound();
+  }
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -29,12 +35,6 @@ const ProductPage = async ({
     redirect(
       `/signin?callbackURL=${encodeURIComponent(`/product/${slug}`)}&required=1`,
     );
-  }
-
-  const product = await getProductBySlug(slug);
-
-  if (!product) {
-    notFound();
   }
 
   const marketPrices = product.markets.map((market) => ({
@@ -89,7 +89,7 @@ const ProductPage = async ({
           <li aria-hidden="true">&gt;</li>
           <li>
             <Link
-              href={`/#${encodeURIComponent("সব-পণ্য")}`}
+              href={`/category/${product.category}`}
               className="hover:text-green-700"
             >
               {product.categoryNameBn}
@@ -114,6 +114,13 @@ const ProductPage = async ({
               </h1>
               <p className="mt-1 text-sm text-gray-600">{unitLabel}</p>
               <p className="mt-3 text-sm text-[#1d271f]">{changeText}</p>
+              <Link
+                href={`/category/${product.category}`}
+                className="mt-3 inline-flex items-center gap-1 rounded-full border border-[#dce4dc] bg-white px-3 py-1 text-xs font-medium text-[#59645b] transition hover:border-[#05893e] hover:text-green-700"
+              >
+                <span aria-hidden="true">{product.categoryIcon}</span>
+                {product.categoryNameBn}
+              </Link>
             </div>
           </div>
           <div className="sm:min-w-36 sm:text-right">

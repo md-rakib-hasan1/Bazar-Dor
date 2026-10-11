@@ -27,26 +27,3 @@ Sign-in করা ব্যবহারকারী header-এর profile menu �
 ## Product API
 
 পণ্যের data প্রথমে `https://api.api-store.workers.dev/api/bazardor/products` থেকে আসে। এটি unavailable হলে `https://api.abcz.workers.dev/api/bazardor/products` বিকল্প হিসেবে ব্যবহৃত হয়। সফল products response এক ঘণ্টা cache থাকে; category ও category-filtered products একই response থেকে তৈরি হয়, তাই অপ্রয়োজনীয় API request এবং rate-limit কমে।
-
-## Local setup
-
-1. Node.js ও npm install করুন, তারপর project folder-এ:
-
-   ```bash
-   npm install
-   ```
-
-2. development server চালু করুন:
-
-   ```bash
-   npm run dev
-   ```
-
-3. [http://localhost:3000](http://localhost:3000) খুলুন।
-
-## Validation
-
-```bash
-npm run lint
-npm run build
-```
