@@ -7,7 +7,14 @@ export const client = new MongoClient(process.env.MONGODB_URI as string);
 export const db = client.db("bazar_dor");
 
 export const auth = betterAuth({
-baseURL: process.env.BETTER_AUTH_URL,
+baseURL: process.env.BETTER_AUTH_URL || 
+process.env.BETTER_AUTH_BASE_URL,
+secret:process.env.BETTER_AUTH_SECRET,
+database:mongodbAdapter(db,{client}),
+trustedOrigins:[
+"http://localhost:3000",
+"https://bazar-dor-phi-ebon.vercel.app"
+],
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
@@ -31,8 +38,5 @@ baseURL: process.env.BETTER_AUTH_URL,
         }
       : {}),
   },
-  database: mongodbAdapter(db, {
-    client,
-  }),
   plugins: [nextCookies()],
 });
