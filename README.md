@@ -4,7 +4,7 @@
 
 Bazar Dor is a responsive web application for checking everyday product prices in Bangladesh and comparing prices across local markets.
 
-##🔗 Live Link
+## 🔗 Live Link
 https://bazar-dor-phi-ebon.vercel.app/
 
 ## Technologies Used
